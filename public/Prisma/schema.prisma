@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id           String   @id @default(uuid())
+  userId       String
+  platform     Platform
+  externalId   String
+  accessToken  String
+  createdAt    DateTime @default(now())
+}
+
+model MediaAsset {
+  id          String   @id @default(uuid())
+  userId      String
+  storagePath String
+  kind        MediaKind
+  createdAt   DateTime @default(now())
+}
+
+model Draft {
+  id              String   @id @default(uuid())
+  userId          String
+  caption         String?
+  hashtags        String[]   // Postgres text[]
+  targetInstagram Boolean    @default(true)
+  targetFacebook  Boolean    @default(false)
+  mediaAssetIds   String[]   // array of MediaAsset IDs
+  createdAt       DateTime   @default(now())
+}
+
+enum Platform {
+  instagram
+  facebook
+}
+
+enum MediaKind {
+  image
+  video
+}
