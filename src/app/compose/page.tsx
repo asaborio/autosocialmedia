@@ -40,7 +40,7 @@ export default function ComposePage() {
 
     try {
       setPosting(true);
-      const resp = await fetch("/api/ig/publish-image", {
+      const resp = await fetch("/api/assets/ig/publish-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -50,8 +50,17 @@ export default function ComposePage() {
           caption,
         }),
       });
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`Publish failed: ${resp.status} ${text.slice(0, 200)}`);
+      }
+      const ct = resp.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) {
+        const text = await resp.text();
+        throw new Error(`Non-JSON response: ${ct} ${text.slice(0, 120)}`);
+      }
       const json = await resp.json();
-      if (!resp.ok) throw new Error(json.error || "Publish failed");
+      if (json?.error) throw new Error(String(json.error));
       setMsg(`Published! Media ID: ${json.publish?.id ?? "check Instagram"}`);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to publish";
