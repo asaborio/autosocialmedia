@@ -49,7 +49,8 @@ export default async function handler(
     ).then((r) => r.json());
 
     res.status(200).json({ container: containerResp, publish: publishResp });
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
+    res.status(500).json({ error: message });
   }
 }

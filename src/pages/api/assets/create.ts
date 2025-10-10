@@ -24,7 +24,8 @@ export default async function handler(
       data: { userId, storagePath, kind },
     });
     res.status(200).json(row);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
+    res.status(500).json({ error: message });
   }
 }

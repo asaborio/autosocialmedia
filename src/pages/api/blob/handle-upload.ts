@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { handleUpload } from "@vercel/blob/client";
+import type { HandleUploadBody } from "@vercel/blob/client";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,7 +12,7 @@ export default async function handler(
   try {
     const result = await handleUpload({
       request: req,
-      body: req.body as any,
+      body: req.body as HandleUploadBody,
       onBeforeGenerateToken: async () => {
         return {
           // Basic constraints; adjust as needed

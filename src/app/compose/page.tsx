@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type Asset = { id: string; storagePath: string; kind: "image" | "video" };
 
@@ -52,8 +53,9 @@ export default function ComposePage() {
       const json = await resp.json();
       if (!resp.ok) throw new Error(json.error || "Publish failed");
       setMsg(`Published! Media ID: ${json.publish?.id ?? "check Instagram"}`);
-    } catch (e: any) {
-      setMsg(e.message ?? "Failed to publish");
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Failed to publish";
+      setMsg(message);
     } finally {
       setPosting(false);
     }
@@ -71,11 +73,16 @@ export default function ComposePage() {
             className={`border rounded-lg overflow-hidden ${selectedId === a.id ? "ring-2 ring-blue-500" : ""}`}
             title={a.storagePath}
           >
-            <img
-              src={a.storagePath}
-              alt=""
-              className="w-full h-32 object-cover"
-            />
+            <div className="w-full h-32 relative">
+              <Image
+                src={a.storagePath}
+                alt=""
+                fill
+                sizes="(max-width: 768px) 33vw, 16vw"
+                className="object-cover"
+                priority={selectedId === a.id}
+              />
+            </div>
           </button>
         ))}
         {assets.length === 0 && (
